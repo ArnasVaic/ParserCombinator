@@ -1,3 +1,5 @@
+.idea
+*.sln.DotSettings.*
 bin/
 obj/
 /packages/
