@@ -17,7 +17,7 @@ public class Either<TLeft, TRight>
     public static Either<L, R> From<L, R>(L? left) => new(left, default);
 
     public static Either<L, R> From<L, R>(R? right) => new(default, right);
-
+    
     public Either<TLeft, TResult> Map<TResult>(Func<TRight, TResult> func)
     {
         if(_right is not null)
