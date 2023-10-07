@@ -3,7 +3,7 @@ namespace ParserCombinator.Lexers;
 /// <summary>
 /// This class provides a develop friendly way to create lexers.
 /// </summary>
-public static class CommonLexers
+public static class Lexers
 {
     public static CharacterLexer Is(char target) => new(target);
     
@@ -12,4 +12,8 @@ public static class CommonLexers
     public static OrLexerCombinator<TResult> Or<TResult>
         (ILexer<TResult> first, ILexer<TResult> second) => 
             new(first, second);
+    
+    public static ManyOrLexerCombinator<TResult> Or<TResult>
+        (params ILexer<TResult>[] lexers) => 
+            new(lexers);
 }

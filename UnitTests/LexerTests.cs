@@ -1,11 +1,19 @@
-﻿using static ParserCombinator.Lexers.CommonLexers;
+﻿using static ParserCombinator.Lexers.Lexers;
 using Xunit;
+using Xunit.Abstractions;
 using static UnitTests.LexerTestHelpers;
 
 namespace UnitTests;
 
 public class LexerTests
 {
+    private readonly ITestOutputHelper _testOutputHelper;
+
+    public LexerTests(ITestOutputHelper testOutputHelper)
+    {
+        _testOutputHelper = testOutputHelper;
+    }
+
     [Theory]
     [InlineData("0")]
     [InlineData("1")]
@@ -57,4 +65,30 @@ public class LexerTests
         Or(Satisfy(_ => false), Satisfy(_ => false)), 
         "a",
         r => { });
+
+    [Theory]
+    [InlineData("a")]
+    [InlineData("e")]
+    [InlineData("i")]
+    [InlineData("o")]
+    [InlineData("u")]
+    public void ManyOr_LowercaseVowelParser_Succeeds(string input) => TestSuccess(
+        Or(Is('a'), Is('e'), Is('i'), Is('o'), Is('u')), 
+        input,
+        r => Assert.Equal(input, $"{r.Result}"));
+
+    [Fact]
+    public void Test()
+    {
+        var vowelLexer = Or(
+            Is('a'), 
+            Is('e'), 
+            Is('i'), 
+            Is('o'), 
+            Is('u'));
+
+        vowelLexer
+            .Lex("e")
+            .Map(r => _testOutputHelper.WriteLine(r.Result.ToString()));
+    }
 }
