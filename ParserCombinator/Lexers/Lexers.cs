@@ -1,68 +1,58 @@
 ﻿using ParserCombinator.Core;
 
+using static ParserCombinator.Core.Either;
+
 namespace ParserCombinator.Lexers;
 
-public record Token
+public class CharLexer(char target) : LexerBase<char>
 {
+    public override Either<string, LexResult<char>> Lex(LexerInput input) =>
+        new PredicateLexer(target.Equals).Lex(input);
 }
 
-public record LexResult<T>(T Result, MemoryStream Remaining);
-
-public class LexerState
+public class PredicateLexer(Predicate<char> predicate) : LexerBase<char>
 {
-    public LexerState()
+    public override Either<string, LexResult<char>> Lex(LexerInput input)
     {
-        
-    }
-}
+        if(input.Data.Count <= input.Offset)
+            return Left<string, LexResult<char>>("Empty input");
 
-public static class Lexers
-{
-    public static Either<string, LexResult<char>> Satisfy(
-        Predicate<char> predicate,
-        IReadOnlyCollection<char> reader)
-    {
-        if()
-            reader.ElementAt()
-        var ch = reader.Read()
-
-        if(ch == -1)
-            return Either<string, LexResult<char>>
-                .Left($"Empty stream");
-
-        var @char = (char)ch;
+        var @char = input.Data.ElementAt(input.Offset);
         
         if (!predicate(@char))
-            return Either<string, LexResult<char>>
-                .Left($"Unexpected character {@char}");
+            return Left<string, LexResult<char>>($"Unexpected character {@char}");
+
+        input.Offset++;
         
-        var result = new LexResult<char>(@char, reader);
-        return Either<string, LexResult<char>>.Right(result);
+        var result = new LexResult<char>(@char, input);
+        return Right<string, LexResult<char>>(result);
     }
+}
 
-    public static Either<string, LexResult<char>> Is(
-        char target,
-        StringReader reader) => 
-        Satisfy(target.Equals, reader);
-
+public class LexerOrCombinator<TResult>(ILexer<TResult> first, ILexer<TResult> second) : LexerBase<TResult>
+{
     /// <summary>
-    /// `Or` parser. Takes two parsers as input.
-    /// Note that in case of success both parsers must return the same type.
+    /// Tries to lex with the first lexer, if it fails, then tries to parse with the second lexer.
     /// </summary>
-    /// <param name="first">First parser</param>
-    /// <param name="second">Second parser</param>
-    /// <typeparam name="TResult">Type parsed by the input parsers</typeparam>
-    /// <returns>Parser that tries to parse with the first parser and in case of failure tries the second parser</returns>
-    public static Func<StringReader, Either<string, LexResult<TResult>>> Or<TResult>(
-        Func<StringReader, Either<string, LexResult<TResult>>> first,
-        Func<StringReader, Either<string, LexResult<TResult>>> second) => input =>
-    {
-        first(input).Match(
-            left =>
-            {
-                // try to parse again
-            },
-            right => right
-        );
-    };
+    /// <param name="input">Lexer input</param>
+    /// <returns>Lex result</returns>
+    public override Either<string, LexResult<TResult>> Lex(LexerInput input) =>
+        first.Lex(input).Match<Either<string, LexResult<TResult>>>(
+            _ => second.Lex(input).Match(
+                Left<string, LexResult<TResult>>,
+                Right<string, LexResult<TResult>>
+                ),
+                Right<string, LexResult<TResult>>
+            );
+}
+
+public static class CommonLexers
+{
+    public static CharLexer Is(char target) => new(target);
+    
+    public static PredicateLexer Satisfy(Predicate<char> predicate) => new(predicate);
+    
+    public static LexerOrCombinator<TResult> Or<TResult>
+        (ILexer<TResult> first, ILexer<TResult> second) => 
+            new(first, second);
 }
