@@ -76,19 +76,4 @@ public class LexerTests
         Or(Is('a'), Is('e'), Is('i'), Is('o'), Is('u')), 
         input,
         r => Assert.Equal(input, $"{r.Result}"));
-
-    [Fact]
-    public void Test()
-    {
-        var vowelLexer = Or(
-            Is('a'), 
-            Is('e'), 
-            Is('i'), 
-            Is('o'), 
-            Is('u'));
-
-        vowelLexer
-            .Lex("e")
-            .Map(r => _testOutputHelper.WriteLine(r.Result.ToString()));
-    }
 }
