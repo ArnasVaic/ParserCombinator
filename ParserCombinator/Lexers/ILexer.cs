@@ -21,17 +21,19 @@ public interface ILexer<TResult>
 /// <summary>
 /// The result of a lexer is some structure and the remaining input.
 /// </summary>
-/// <param name="Result">Lexed structure</param>
-/// <param name="Remaining">Remaining input</param>
+/// <param name="result">Lexed structure</param>
+/// <param name="remaining">Remaining input</param>
 /// <typeparam name="TResult"></typeparam>
 public record LexResult<TResult>(TResult Result, LexerInput Remaining);
 
 /// <summary>
 /// Lexer input reads from an immutable source of characters and tracks the reading position.
 /// </summary>
-/// <param name="Data">Source of characters to read from</param>
-/// <param name="Offset">Index of a character where the lexer will begin reading</param>
-public record LexerInput(IReadOnlyCollection<char> Data, int Offset)
+/// <param name="data">Source of characters to read from</param>
+/// <param name="offset">Index of a character where the lexer will begin reading</param>
+public struct LexerInput(IReadOnlyCollection<char> data, int offset)
 {
-    public int Offset { get; set; } = Offset;
+    public IReadOnlyCollection<char> Data { get; } = data;
+    
+    public int Offset { get; set; } = offset;
 }

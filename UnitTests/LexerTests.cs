@@ -1,8 +1,5 @@
-﻿using ParserCombinator.Exceptions;
-using static ParserCombinator.Lexers.CommonLexers;
+﻿using static ParserCombinator.Lexers.CommonLexers;
 using Xunit;
-
-
 using static UnitTests.LexerTestHelpers;
 
 namespace UnitTests;
@@ -20,33 +17,44 @@ public class LexerTests
     [InlineData("7")]
     [InlineData("8")]
     [InlineData("9")]
-    public void Satisfy_ExpectedCharacter(string input) => TestSuccess(
+    public void Satisfy_ExpectedCharacter_LexerSucceeds(string input) => TestSuccess(
         Satisfy(char.IsDigit), 
         input,
-        @char => Assert.Equal(input, $"{@char}"));
-
-
-    [Fact]
-    public void Satisfy_UnexpectedCharacter() => TestFailure(
+        r => Assert.Equal(input, $"{r.Result}"));
+    
+    [Theory]
+    [InlineData("A")]
+    [InlineData("B")]
+    [InlineData("C")]
+    public void Satisfy_UnexpectedCharacter_LexerFails(string input) => TestFailure(
         Satisfy(char.IsDigit),
-        "abc",
+        input,
         _ => { });
 
     [Theory]
     [InlineData("A")]
     [InlineData("1")]
     [InlineData("@")]
-    public void Is_ExpectedCharacter(string input) => TestSuccess(
+    public void Is_ExpectedCharacter_LexerSucceeds(string input) => TestSuccess(
         Is(input[0]), 
         input,
-        @char => Assert.Equal(input, $"{@char}"));
+        r => Assert.Equal(input, $"{r.Result}"));
 
-    [Theory]
-    [InlineData("b")]
-    [InlineData("0")]
-    [InlineData("7")]
-    public void Or_Simple(string input) => TestSuccess(
-        Or(Satisfy(char.IsDigit), Is('b')), 
-        input,
-        @char => Assert.Equal(input, $"{@char}"));
+    [Fact]
+    public void Or_FirstLexerSucceeds() => TestSuccess(
+        Or(Is('a'), Satisfy(_ => false)), 
+        "a",
+        r => Assert.Equal("a", $"{r.Result}"));
+    
+    [Fact]
+    public void Or_FirstLexerFails_SecondLexerSucceeds() => TestSuccess(
+        Or(Satisfy(_ => false), Is('a')), 
+        "a",
+        r => Assert.Equal("a", $"{r.Result}"));
+    
+    [Fact]
+    public void Or_BothLexersFail_LexerFails() => TestFailure(
+        Or(Satisfy(_ => false), Satisfy(_ => false)), 
+        "a",
+        r => { });
 }
