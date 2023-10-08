@@ -31,3 +31,4 @@ public abstract class LexerBase<TResult> : ILexer<TResult>
     public Either<string, LexResult<TResult>> Lex(string input) =>
         Lex(input.ToArray());
 }
+        

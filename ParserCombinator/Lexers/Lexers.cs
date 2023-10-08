@@ -1,7 +1,8 @@
 namespace ParserCombinator.Lexers;
 
 /// <summary>
-/// This class provides a develop friendly way to create lexers.
+/// This class provides a develop friendly way to combine lexers.
+/// Include this class as static for maximum fluency.
 /// </summary>
 public static class Lexers
 {
@@ -16,4 +17,11 @@ public static class Lexers
     public static ManyOrLexerCombinator<TResult> Or<TResult>
         (params ILexer<TResult>[] lexers) => 
             new(lexers);
+
+    public static SequenceLexer<TResult> Seq<TResult>
+        (params ILexer<TResult>[] lexers) =>
+            new(lexers);
+    
+    public static SequenceLexer<char> Seq(string pattern) =>
+        new(pattern.Select(Is));
 }

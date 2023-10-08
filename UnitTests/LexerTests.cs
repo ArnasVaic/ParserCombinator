@@ -76,4 +76,20 @@ public class LexerTests
         Or(Is('a'), Is('e'), Is('i'), Is('o'), Is('u')), 
         input,
         r => Assert.Equal(input, $"{r.Result}"));
+
+    [Theory]
+    [InlineData("abc")]
+    [InlineData("this is a longer test than usual")]
+    [InlineData("Can,you . handle -  punctuation???")]
+    public void Seq_PatternMatchesInput_Succeeds(string input)
+    {
+        Seq(input).Lex(input).Match(
+            WrongPath,
+            r =>
+            {
+                var resultString = new string(r.Result.ToArray());
+                Assert.Equal(input, resultString);
+                Assert.Equal(r.Remaining.Data.Count, r.Remaining.Offset);
+            });
+    }
 }

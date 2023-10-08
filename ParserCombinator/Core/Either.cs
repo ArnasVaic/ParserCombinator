@@ -28,10 +28,10 @@ public class Either<TLeft, TRight>
     /// <exception cref="UnreachableException"></exception>
     public Either<TLeft, TResult> Map<TResult>(Func<TRight, TResult> func)
     {
-        if(_right is not null)
+        if(Success)
             return Either.Right<TLeft, TResult>(func(_right));
         
-        if(_left is not null)
+        if(Failure)
             return Either.Left<TLeft, TResult>(_left);
 
         throw new UnreachableException("Something went really wrong.");
@@ -44,13 +44,13 @@ public class Either<TLeft, TRight>
     /// <exception cref="UnreachableException"></exception>
     public void Map(Action<TRight> action)
     {
-        if(_right is not null)
+        if(Success)
         {
             action(_right);
             return;
         }
 
-        if(_left is not null)
+        if(Failure)
             return;
 
         throw new UnreachableException("Something went really wrong.");
@@ -67,10 +67,10 @@ public class Either<TLeft, TRight>
     public TResult Match<TResult>
         (Func<TLeft, TResult> handleLeft, Func<TRight, TResult> handleRight)
     {
-        if(_right is not null)
+        if(Success)
             return handleRight(_right);
 
-        if(_left is not null)
+        if(Failure)
             return handleLeft(_left);
 
         throw new UnreachableException("Something went really wrong.");
@@ -84,13 +84,13 @@ public class Either<TLeft, TRight>
     /// <exception cref="UnreachableException"></exception>
     public void Match(Action<TLeft> handleLeft, Action<TRight> handleRight)
     {
-        if (_right is not null)
+        if (Success)
         {
             handleRight(_right);
             return;
         }
         
-        if (_left is not null)
+        if (Failure)
         {
             handleLeft(_left);
             return;
@@ -98,6 +98,16 @@ public class Either<TLeft, TRight>
         
         throw new UnreachableException("Something went really wrong.");
     }
+
+    /// <summary>
+    /// Flag indicating calculation success.
+    /// </summary>
+    public bool Success => _right is not null;
+    
+    /// <summary>
+    /// Flag indicating calculation failure.
+    /// </summary>
+    public bool Failure => _left is not null;
 }
 
 /// <summary>

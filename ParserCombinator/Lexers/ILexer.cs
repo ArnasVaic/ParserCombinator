@@ -24,7 +24,10 @@ public interface ILexer<TResult>
 /// <param name="result">Lexed structure</param>
 /// <param name="remaining">Remaining input</param>
 /// <typeparam name="TResult"></typeparam>
-public record LexResult<TResult>(TResult Result, LexerInput Remaining);
+public record LexResult<TResult>(TResult Result, LexerInput Remaining)
+{
+    public LexerInput Remaining { get; set; } = Remaining;
+}
 
 /// <summary>
 /// Lexer input reads from an immutable source of characters and tracks the reading position.

@@ -19,11 +19,17 @@ public class OrLexerCombinator<TResult>(
             Right<string, LexResult<TResult>>);
 }
 
-public class ManyOrLexerCombinator<TResult>(params ILexer<TResult>[] lexers)
+/// <summary>
+/// 
+/// </summary>
+/// <param name="lexers"></param>
+/// <typeparam name="TResult"></typeparam>
+public class ManyOrLexerCombinator<TResult>(IEnumerable<ILexer<TResult>> lexers)
     : LexerBase<TResult>
 {
     /// <summary>
-    /// Tries to lex with the first lexer, if it fails, then tries to lex with the second lexer.
+    /// Tries to lex with the first lexer, if it fails,
+    /// then tries to lex with the second lexer and so on.
     /// </summary>
     /// <param name="input">Lexer input</param>
     /// <returns>Lex result</returns>
