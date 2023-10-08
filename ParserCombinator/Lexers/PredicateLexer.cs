@@ -28,7 +28,6 @@ public class PredicateLexer(Predicate<char> predicate) : LexerBase<char>
 
         input.Offset++;
         
-        var result = new LexResult<char>(@char, input);
-        return Right<string, LexResult<char>>(result);
+        return Right<string, LexResult<char>>(new(@char, input));
     }
 }

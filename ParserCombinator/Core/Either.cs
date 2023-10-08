@@ -7,11 +7,11 @@ using System.Diagnostics;
 /// </summary>
 /// <typeparam name="TLeft">Failure type</typeparam>
 /// <typeparam name="TRight">Success type</typeparam>
-public class Either<TLeft, TRight>
+public class Either<TLeft, TRight> : FunctorBase<TRight>
 {
     private readonly TLeft? _left;
 
-    private readonly TRight? _right;
+    private TRight? _right;
 
     internal Either(TLeft? left, TRight? right)
     {
@@ -26,7 +26,7 @@ public class Either<TLeft, TRight>
     /// <typeparam name="TResult">New success type</typeparam>
     /// <returns>Transformed Either</returns>
     /// <exception cref="UnreachableException"></exception>
-    public Either<TLeft, TResult> Map<TResult>(Func<TRight, TResult> func)
+    public override Either<TLeft, TResult> Map<TResult>(Func<TRight, TResult> func)
     {
         if(Success)
             return Either.Right<TLeft, TResult>(func(_right));
@@ -42,7 +42,7 @@ public class Either<TLeft, TRight>
     /// </summary>
     /// <param name="action"></param>
     /// <exception cref="UnreachableException"></exception>
-    public void Map(Action<TRight> action)
+    public override void Map(Action<TRight> action)
     {
         if(Success)
         {
@@ -55,7 +55,15 @@ public class Either<TLeft, TRight>
 
         throw new UnreachableException("Something went really wrong.");
     }
-    
+
+    public override FunctorBase<TRight> Map(Func<TRight, TRight> func)
+    {
+        if (Success)
+            _right = func(_right);
+
+        return this;
+    }
+
     /// <summary>
     /// Pattern match underlying calculation.
     /// </summary>

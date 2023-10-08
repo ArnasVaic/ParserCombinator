@@ -35,8 +35,7 @@ public class SequenceLexer<TResult>(IEnumerable<ILexer<TResult>> lexers)
                 break;
         }
         
-        // TODO: Make LexResult into a functor and maybe switch the ordering with Either
-        return result.Map(r => 
-            new LexResult<IEnumerable<TResult>>(r.Result.AsEnumerable(), r.Remaining));
+        // TODO: Consider putting Either structure inside LexResult, maybe it would simplify code.
+        return result.Map(r => r.Map(list => list.AsEnumerable()));
     }
 }

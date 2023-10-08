@@ -21,12 +21,35 @@ public interface ILexer<TResult>
 /// <summary>
 /// The result of a lexer is some structure and the remaining input.
 /// </summary>
-/// <param name="result">Lexed structure</param>
-/// <param name="remaining">Remaining input</param>
-/// <typeparam name="TResult"></typeparam>
-public record LexResult<TResult>(TResult Result, LexerInput Remaining)
+/// <typeparam name="T">Type of result</typeparam>
+public class LexResult<T> : FunctorBase<T>
 {
-    public LexerInput Remaining { get; set; } = Remaining;
+    /// <summary>
+    /// The result of a lexer is some structure and the remaining input.
+    /// </summary>
+    /// <param name="result">Lexed structure</param>
+    /// <param name="remaining">Remaining input</param>
+    /// <typeparam name="T">Type of result</typeparam>
+    public LexResult(T result, LexerInput remaining)
+    {
+        Result = result;
+        Remaining = remaining;
+    }
+
+    public T Result { get; }
+    
+    public LexerInput Remaining { get; set; }
+    
+    public override LexResult<TResult> Map<TResult>(Func<T, TResult> func) => 
+        new(func(Result), Remaining);
+
+    public override void Map(Action<T> func) => func(Result);
+
+    public override LexResult<T> Map(Func<T, T> func)
+    {
+        func(Result);
+        return this;
+    }
 }
 
 /// <summary>
