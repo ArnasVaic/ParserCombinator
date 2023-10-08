@@ -8,7 +8,7 @@ namespace ParserCombinator.Lexers;
 /// </summary>
 /// <param name="lexers">Sequence of lexers</param>
 /// <typeparam name="TResult">Type of result</typeparam>
-public class SequenceLexer<TResult>(IEnumerable<ILexer<TResult>> lexers)
+public class SequenceLexer<TResult>(IEnumerable<LexerBase<TResult>> lexers)
     : LexerBase<IEnumerable<TResult>>
 {
     public override Either<string, LexResult<IEnumerable<TResult>>> Lex(LexerInput input)

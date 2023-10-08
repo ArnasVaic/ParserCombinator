@@ -11,15 +11,15 @@ public static class Lexers
     public static PredicateLexer Satisfy(Predicate<char> predicate) => new(predicate);
     
     public static OrLexerCombinator<TResult> Or<TResult>
-        (ILexer<TResult> first, ILexer<TResult> second) => 
+        (LexerBase<TResult> first, LexerBase<TResult> second) => 
             new(first, second);
     
     public static ManyOrLexerCombinator<TResult> Or<TResult>
-        (params ILexer<TResult>[] lexers) => 
+        (params LexerBase<TResult>[] lexers) => 
             new(lexers);
 
     public static SequenceLexer<TResult> Seq<TResult>
-        (params ILexer<TResult>[] lexers) =>
+        (params LexerBase<TResult>[] lexers) =>
             new(lexers);
     
     public static SequenceLexer<char> Seq(string pattern) =>
@@ -28,4 +28,12 @@ public static class Lexers
     public static PredicateLexer Digit => new(char.IsDigit);
     
     public static PredicateLexer WhiteSpace => new(char.IsWhiteSpace);
+
+    public static SomeLexer<TResult> Some<TResult>(LexerBase<TResult> lexer) =>
+        new(lexer);
+
+    public static ManyLexer<TResult> Many<TResult>(LexerBase<TResult> lexer) =>
+        new(lexer);
+    
+    public static ManyLexer<char> Number => Many(Digit);
 }
