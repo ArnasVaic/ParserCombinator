@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using System.Security.Cryptography;
 using ParserCombinator.Core;
 using static ParserCombinator.Core.Either;
 using static ParserCombinator.Lexers.Lexer;
@@ -85,18 +86,45 @@ public static class CommonLexers
         Ok<char>(new (
             input.Data.First(), 
             input.Advance())));
-
+    
     public static Lexer<char> Satisfy(Predicate<char> predicate) => 
         AnyChar.Bind(c => predicate(c) ? 
             Pure(c) : 
             Zero<char>($"Unexpected character {c}."));
 
+    public static Lexer<char> Char(char c) => Satisfy(c.Equals);
+    
     public static Lexer<char> Digit => Satisfy(char.IsDigit);
     
     public static Lexer<char> Letter => Satisfy(char.IsLetter);
     
     public static Lexer<T> Zero<T>(string error) => new(_ => Bad<T>(error));
     public static Lexer<T> Zero<T>() => new(_ => Bad<T>(string.Empty));
+
+    public static Lexer<IEnumerable<T>> Seq<T>(params Lexer<T>[] lexers) => 
+        Seq(lexers.AsEnumerable());
+    
+    public static Lexer<IEnumerable<T>> Seq<T>(IEnumerable<Lexer<T>> lexers) => new(input =>
+    {
+        var acc = new List<T>();
+        var rem = input;
+        
+        foreach (var lexer in lexers)
+        {
+            var result = lexer.LexFunc(input);
+            
+            if (result.Failure)
+                return Bad<IEnumerable<T>>("Could not parse sequence.");
+
+            result.Map(r =>
+            {
+                rem = r.Remaining;
+                acc.Add(r.Result);
+            });
+        }
+
+        return Ok<IEnumerable<T>>(new(acc, rem));
+    });
     
     public static Lexer<T> Pure<T>(T result) => 
         new(input => Ok(new LexResult<T>(result, input)));
