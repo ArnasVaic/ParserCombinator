@@ -1,3 +1,5 @@
+using ParserCombinator.Core;
+
 namespace ParserCombinator.Lexers;
 
 /// <summary>
@@ -34,6 +36,6 @@ public static class Lexers
 
     public static ManyLexer<TResult> Many<TResult>(LexerBase<TResult> lexer) =>
         new(lexer);
-    
+
     public static ManyLexer<char> Number => Many(Digit);
 }

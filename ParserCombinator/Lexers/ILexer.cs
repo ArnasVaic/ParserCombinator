@@ -62,4 +62,10 @@ public struct LexerInput(IReadOnlyCollection<char> data, int offset)
     public IReadOnlyCollection<char> Data { get; } = data;
     
     public int Offset { get; set; } = offset;
+
+    public LexerInput Advance()
+    {
+        ++offset;
+        return this;
+    }
 }

@@ -1,6 +1,7 @@
-﻿namespace ParserCombinator.Core;
+﻿using System.Diagnostics;
+using static ParserCombinator.Core.Either;
 
-using System.Diagnostics;
+namespace ParserCombinator.Core;
 
 /// <summary>
 /// Represents a calculation that can fail.
@@ -107,6 +108,17 @@ public class Either<TLeft, TRight> : FunctorBase<TRight>
         throw new UnreachableException("Something went really wrong.");
     }
 
+    public Either<TLeft, TResult> Bind<TResult>(Func<TRight, Either<TLeft, TResult>> func)
+    {
+        if (Success)
+            return func(_right);
+
+        if (Failure)
+            return Left<TLeft, TResult>(_left);
+        
+        throw new UnreachableException("Something went really wrong.");
+    }
+    
     /// <summary>
     /// Flag indicating calculation success.
     /// </summary>
@@ -116,6 +128,26 @@ public class Either<TLeft, TRight> : FunctorBase<TRight>
     /// Flag indicating calculation failure.
     /// </summary>
     public bool Failure => _left is not null;
+    
+    /// <summary>
+    /// Construct an Either object that represents failure.
+    /// </summary>
+    /// <param name="left">Value</param>
+    /// <typeparam name="TLeft">Type of failure</typeparam>
+    /// <typeparam name="TRight">Type of success</typeparam>
+    /// <returns>Either object</returns>
+    public static Either<TLeft, TRight> Left
+        (TLeft? left) => new(left, default);
+
+    /// <summary>
+    /// Construct an Either object that represents success.
+    /// </summary>
+    /// <param name="right">Value</param>
+    /// <typeparam name="TLeft">Type of failure</typeparam>
+    /// <typeparam name="TRight">Type of success</typeparam>
+    /// <returns>Either object</returns>
+    public static Either<TLeft, TRight> Right
+        (TRight? right) => new(default, right);
 }
 
 /// <summary>
