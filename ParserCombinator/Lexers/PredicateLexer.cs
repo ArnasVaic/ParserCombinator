@@ -84,8 +84,8 @@ public static class CommonLexers
         input.Data.Count <= input.Offset ? 
         Bad<char>("Empty input") : 
         Ok<char>(new (
-            input.Data.First(), 
-            input.Advance())));
+            input.Data.ElementAt(input.Offset), 
+            input with { Offset = input.Offset + 1})));
     
     public static Lexer<char> Satisfy(Predicate<char> predicate) => 
         AnyChar.Bind(c => predicate(c) ? 
@@ -103,6 +103,10 @@ public static class CommonLexers
 
     public static Lexer<IEnumerable<T>> Seq<T>(params Lexer<T>[] lexers) => 
         Seq(lexers.AsEnumerable());
+
+    public static Lexer<string> String(string input) =>
+        Seq(input.Select(Char))
+            .Map(chs => new string(chs.ToArray()));
     
     public static Lexer<IEnumerable<T>> Seq<T>(IEnumerable<Lexer<T>> lexers) => new(input =>
     {
@@ -111,20 +115,46 @@ public static class CommonLexers
         
         foreach (var lexer in lexers)
         {
-            var result = lexer.LexFunc(input);
+            var result = lexer.LexFunc(rem);
             
             if (result.Failure)
                 return Bad<IEnumerable<T>>("Could not parse sequence.");
 
             result.Map(r =>
             {
-                rem = r.Remaining;
                 acc.Add(r.Result);
+                rem = r.Remaining;
             });
         }
 
         return Ok<IEnumerable<T>>(new(acc, rem));
     });
+
+    public static Lexer<IEnumerable<T>> Some<T>(Lexer<T> lexer) => 
+        new (input =>
+        {
+            var acc = new List<T>();
+            var rem = input;
+
+            Either<string, LexResult<T>> result;
+            do
+            {
+                result = lexer.LexFunc(rem);
+
+                result.Map(r =>
+                {
+                    acc.Add(r.Result);
+                    rem = r.Remaining;
+                });
+            } while (result.Success);
+
+            return Ok<IEnumerable<T>>(new(acc, rem));
+        });
+
+    public static Lexer<IEnumerable<T>> Many<T>(Lexer<T> lexer) => lexer
+        .Bind(r1 => Some(lexer)
+        .Bind(r2 => 
+            Pure(r1.Wrap().Concat(r2))));
     
     public static Lexer<T> Pure<T>(T result) => 
         new(input => Ok(new LexResult<T>(result, input)));

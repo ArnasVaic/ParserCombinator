@@ -26,6 +26,10 @@ public class AnyCharTests
             .Lex(input)
             .Match(
                 error => throw new Exception(error),
-                r => Assert.Equal(input[0], r.Result));
+                r =>
+                {
+                    Assert.Equal(1, r.Remaining.Offset);
+                    Assert.Equal(input[0], r.Result);
+                });
     }
 }

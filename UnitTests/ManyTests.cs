@@ -5,17 +5,16 @@ using static ParserCombinator.Lexers.CommonLexers;
 
 namespace UnitTests;
 
-public class SomeLexerTests
+public class ManyTests
 {
     [Fact]
-    public void Some_EmptyInputFailingLexer_Success() => SuccessTest(
+    public void EmptyInputFailingLexer_Failure() => FailTest(
         Some(Satisfy(_ => false)),
         string.Empty,
-        r => Assert.Equal(Array.Empty<char>(), r.Result.ToArray())
-        );
+        _ => { });
     
     [Fact]
-    public void Some_NonEmptyInputFailingLexer_Success() => SuccessTest(
+    public void NonEmptyInputFailingLexer_Success() => SuccessTest(
         Some(Satisfy(_ => false)),
         "some lexer has to always succeed and the result will be an empty array",
         r => Assert.Equal(Array.Empty<char>(), r.Result.ToArray())

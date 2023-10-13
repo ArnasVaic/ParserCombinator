@@ -31,4 +31,18 @@ public static class LexerTestHelpers
     public static void TestSuccess<TResult>
         (LexerBase<TResult> lexer, string input, Action<LexResult<TResult>> test) =>
         lexer.Lex(input).Match(WrongPath, test);
+
+    public static void FailTest<T>(
+        Lexer<T> lexer,
+        string input,
+        Action<string> test) => lexer
+        .Lex(input)
+        .Match(test, _ => throw new Exception("Lexer was supposed to fail."));
+
+    private static void Throw(string s) => throw new Exception(s);
+    
+    public static void SuccessTest<T>(
+        Lexer<T> lexer,
+        string input,
+        Action<LexResult<T>> test) => lexer.Lex(input).Match(Throw, test);
 }

@@ -30,9 +30,4 @@ public abstract class LexerBase<T> : ILexer<T>
     /// <returns>Lexing result</returns>
     public Either<string, LexResult<T>> Lex(string input) =>
         Lex(input.ToArray());
-    
-    // public LexerBase<TResult> Bind<TResult>(Func<T, LexerBase<TResult>> func)
-    // {
-    //     
-    // }
 }
