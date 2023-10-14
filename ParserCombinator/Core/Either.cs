@@ -8,7 +8,7 @@ namespace ParserCombinator.Core;
 /// </summary>
 /// <typeparam name="TLeft">Failure type</typeparam>
 /// <typeparam name="TRight">Success type</typeparam>
-public class Either<TLeft, TRight> : FunctorBase<TRight>
+public class Either<TLeft, TRight>
 {
     private readonly TLeft? _left;
 
@@ -27,13 +27,13 @@ public class Either<TLeft, TRight> : FunctorBase<TRight>
     /// <typeparam name="TResult">New success type</typeparam>
     /// <returns>Transformed Either</returns>
     /// <exception cref="UnreachableException"></exception>
-    public override Either<TLeft, TResult> Map<TResult>(Func<TRight, TResult> func)
+    public Either<TLeft, TResult> Map<TResult>(Func<TRight, TResult> func)
     {
         if(Success)
-            return Either.Right<TLeft, TResult>(func(_right));
+            return Right<TLeft, TResult>(func(_right));
         
         if(Failure)
-            return Either.Left<TLeft, TResult>(_left);
+            return Left<TLeft, TResult>(_left);
 
         throw new UnreachableException("Something went really wrong.");
     }
@@ -43,7 +43,7 @@ public class Either<TLeft, TRight> : FunctorBase<TRight>
     /// </summary>
     /// <param name="action"></param>
     /// <exception cref="UnreachableException"></exception>
-    public override void Map(Action<TRight> action)
+    public void Map(Action<TRight> action)
     {
         if(Success)
         {
@@ -57,7 +57,12 @@ public class Either<TLeft, TRight> : FunctorBase<TRight>
         throw new UnreachableException("Something went really wrong.");
     }
 
-    public override FunctorBase<TRight> Map(Func<TRight, TRight> func)
+    /// <summary>
+    /// Map function over either and return it.
+    /// </summary>
+    /// <param name="func">function to apply</param>
+    /// <returns>Mapped either</returns>
+    public Either<TLeft, TRight> Map(Func<TRight, TRight> func)
     {
         if (Success)
             _right = func(_right);
@@ -73,8 +78,9 @@ public class Either<TLeft, TRight> : FunctorBase<TRight>
     /// <typeparam name="TResult">Type of result</typeparam>
     /// <returns>Result of the left or right branch</returns>
     /// <exception cref="UnreachableException"></exception>
-    public TResult Match<TResult>
-        (Func<TLeft, TResult> handleLeft, Func<TRight, TResult> handleRight)
+    public TResult Match<TResult>(
+        Func<TLeft, TResult> handleLeft, 
+        Func<TRight, TResult> handleRight)
     {
         if(Success)
             return handleRight(_right);
@@ -108,6 +114,13 @@ public class Either<TLeft, TRight> : FunctorBase<TRight>
         throw new UnreachableException("Something went really wrong.");
     }
 
+    /// <summary>
+    /// Monadic bind operation.
+    /// </summary>
+    /// <param name="func">Maps successful type to Either structure</param>
+    /// <typeparam name="TResult">Type of new success</typeparam>
+    /// <returns>New Either structure</returns>
+    /// <exception cref="UnreachableException"></exception>
     public Either<TLeft, TResult> Bind<TResult>(Func<TRight, Either<TLeft, TResult>> func)
     {
         if (Success)
@@ -128,26 +141,6 @@ public class Either<TLeft, TRight> : FunctorBase<TRight>
     /// Flag indicating calculation failure.
     /// </summary>
     public bool Failure => _left is not null;
-    
-    /// <summary>
-    /// Construct an Either object that represents failure.
-    /// </summary>
-    /// <param name="left">Value</param>
-    /// <typeparam name="TLeft">Type of failure</typeparam>
-    /// <typeparam name="TRight">Type of success</typeparam>
-    /// <returns>Either object</returns>
-    public static Either<TLeft, TRight> Left
-        (TLeft? left) => new(left, default);
-
-    /// <summary>
-    /// Construct an Either object that represents success.
-    /// </summary>
-    /// <param name="right">Value</param>
-    /// <typeparam name="TLeft">Type of failure</typeparam>
-    /// <typeparam name="TRight">Type of success</typeparam>
-    /// <returns>Either object</returns>
-    public static Either<TLeft, TRight> Right
-        (TRight? right) => new(default, right);
 }
 
 /// <summary>
