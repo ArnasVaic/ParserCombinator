@@ -9,16 +9,16 @@ namespace UnitTests.Complex;
 
 public class BoundedIntegerTests
 {
-    private static Parser<char, char> OptionalSign = 
+    private static readonly Parser<char, char> OptionalSign = 
         Symbol('-').Or(Pure<char, char>(' '));
     
-    private static Parser<char, char> Digit = Satisfy<char>(char.IsDigit);
+    private static readonly Parser<char, char> Digit = Satisfy<char>(char.IsDigit);
 
-    private static Parser<char, char> NonZeroDigit = Digit.Bind(d => d == 0 ? 
+    private static readonly Parser<char, char> NonZeroDigit = Digit.Bind(d => d == 0 ? 
         Zero<char, char>("0 cannot be the first digit") : 
         Pure<char, char>(d));
 
-    private static Parser<char, int> Int32Parser = 
+    private static readonly Parser<char, int> Int32Parser = 
         OptionalSign    .Bind(sgn => 
         NonZeroDigit    .Bind(fst => 
         Some(Digit)     .Bind(rem =>

@@ -1,16 +1,13 @@
-using System.ComponentModel.Design;
 using ParserCombinator.Core;
 using Xunit;
 using static ParserCombinator.Core.CommonParsers;
-using static ParserCombinator.Core.Parser;
 using static UnitTests.TestHelpers;
-using static System.Array;
 
 namespace UnitTests.Complex;
 
 public class VowelTests
 {
-    public static Parser<char, char> Vowel =
+    private static Parser<char, char> Vowel =
             Symbol('a')
         .Or(Symbol('e'))
         .Or(Symbol('i'))
