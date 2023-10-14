@@ -1,4 +1,3 @@
-using System.Text;
 using ParserCombinator.Core;
 using Xunit;
 using static ParserCombinator.Core.CommonParsers;
