@@ -5,6 +5,6 @@ namespace VArnas.ParserCombinator;
 
 public static class CharacterParsers
 {
-    public static Parser<char, char> OneOf(string dict) =>
+    public static IParser<char, char> OneOf(string dict) =>
         CommonParsers.OneOf(dict.Select(Symbol));
 }

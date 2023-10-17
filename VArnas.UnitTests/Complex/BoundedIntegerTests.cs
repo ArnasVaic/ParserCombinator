@@ -10,7 +10,7 @@ namespace VArnas.UnitTests.Complex;
 public class BoundedIntegerTests
 {
     private static readonly Parser<char, char> OptionalSign = 
-        Symbol('-').Or(Pure<char, char>(' '));
+        Or(Symbol('-'), Pure<char, char>(' '));
     
     private static readonly Parser<char, char> Digit = Satisfy<char>(char.IsDigit);
 

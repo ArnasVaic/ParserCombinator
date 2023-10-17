@@ -11,7 +11,7 @@ public class OrTests
     [InlineData("abc")]
     [InlineData("def")]
     public void FirstSucceeds(string input) => SuccessTest(
-        Satisfy<char>(char.IsLetter).Or(Zero<char, char>("Always failing")),
+        Or(Satisfy<char>(char.IsLetter), Zero<char, char>("Always failing")),
         input.ToArray(),
         input[0],
         1);
@@ -20,7 +20,7 @@ public class OrTests
     [InlineData("123")]
     [InlineData("456")]
     public void SecondSucceeds(string input) => SuccessTest(
-        Zero<char, char>("Always failing").Or(Satisfy<char>(char.IsDigit)),
+        Or(Zero<char, char>("Always failing"), Satisfy<char>(char.IsDigit)),
         input.ToArray(),
         input[0],
         1);
@@ -29,6 +29,6 @@ public class OrTests
     [InlineData("\t\t\t")]
     [InlineData("\n\n\n")]
     public void BothFail(string input) => FailTest(
-        Satisfy<char>(char.IsLetter).Or(Satisfy<char>(char.IsDigit)),
+        Or(Satisfy<char>(char.IsLetter), Satisfy<char>(char.IsDigit)),
         input.ToArray());
 }

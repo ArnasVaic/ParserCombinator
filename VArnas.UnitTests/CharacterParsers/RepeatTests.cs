@@ -13,7 +13,7 @@ public class RepeatTests
     
     [Fact]
     public void NonEmptyInput_AnyCharInnerParser() => SuccessTest(
-        Repeat(Any<char>(), 4),
+        Repeat<char, char>(Any<char>(), 4),
         "repeat parser applied parser P n times".ToArray(),
         "repe".ToArray(),
         4);

@@ -1,19 +1,30 @@
-using System;
 
 namespace VArnas.ParserCombinator;
 
-public class ParseResult<TSymbol, TResult>(TResult result, ParserInput<TSymbol> remaining)
+public interface IParseResult<out TSymbol, out TValue>
+{
+    TValue Result { get; }
+
+    IParserInput<TSymbol> Remaining { get; }
+
+    IParseResult<TSymbol, TOther> Map<TOther>(Func<TValue, TOther> map);
+}
+
+public class ParseResult<TSymbol, TResult>(
+    TResult result, 
+    IParserInput<TSymbol> remaining) 
+    : IParseResult<TSymbol, TResult>
 {
     public TResult Result { get; } = result;
 
-    public ParserInput<TSymbol> Remaining { get; } = remaining;
+    public IParserInput<TSymbol> Remaining { get; } = remaining;
 
-    public ParseResult<TSymbol, TOther> Map<TOther>(Func<TResult, TOther> func) => 
-        new(func(Result), Remaining);
+    public IParseResult<TSymbol, TOther> Map<TOther>(Func<TResult, TOther> func) => 
+        new ParseResult<TSymbol, TOther>(func(Result), Remaining);
 
     public void Map(Action<TResult> func) => func(Result);
 
-    public ParseResult<TSymbol, TResult> Map(Func<TResult, TResult> func)
+    public IParseResult<TSymbol, TResult> Map(Func<TResult, TResult> func)
     {
         func(Result);
         return this;

@@ -4,12 +4,31 @@ using static VArnas.ParserCombinator.Either;
 
 namespace VArnas.ParserCombinator;
 
+public interface IEither<TLeft, out TRight>
+{
+    public TResult Match<TResult>(
+        Func<TLeft, TResult> handleLeft,
+        Func<TRight, TResult> handleRight);
+    
+    public void Match(Action<TLeft> handleLeft, Action<TRight> handleRight);
+    
+    IEither<TLeft, TNew> Map<TNew>(Func<TRight, TNew> func);
+    
+    void Map(Action<TRight> func);
+
+    IEither<TLeft, TNew> Bind<TNew>(Func<TRight, IEither<TLeft, TNew>> func);
+    
+    bool Success { get; }
+    
+    bool Failure { get; }
+}
+
 /// <summary>
 /// Represents a calculation that can fail.
 /// </summary>
 /// <typeparam name="TLeft">Failure type</typeparam>
 /// <typeparam name="TRight">Success type</typeparam>
-public class Either<TLeft, TRight>
+public class Either<TLeft, TRight> : IEither<TLeft, TRight>
 {
     private readonly TLeft? _left;
 
@@ -28,7 +47,7 @@ public class Either<TLeft, TRight>
     /// <typeparam name="TResult">New success type</typeparam>
     /// <returns>Transformed Either</returns>
     /// <exception cref="UnreachableException"></exception>
-    public Either<TLeft, TResult> Map<TResult>(Func<TRight, TResult> func)
+    public IEither<TLeft, TResult> Map<TResult>(Func<TRight, TResult> func)
     {
         if(Success)
             return Right<TLeft, TResult>(func(_right));
@@ -122,7 +141,7 @@ public class Either<TLeft, TRight>
     /// <typeparam name="TResult">Type of new success</typeparam>
     /// <returns>New Either structure</returns>
     /// <exception cref="UnreachableException"></exception>
-    public Either<TLeft, TResult> Bind<TResult>(Func<TRight, Either<TLeft, TResult>> func)
+    public IEither<TLeft, TResult> Bind<TResult>(Func<TRight, IEither<TLeft, TResult>> func)
     {
         if (Success)
             return func(_right);

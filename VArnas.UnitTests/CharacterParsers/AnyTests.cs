@@ -1,3 +1,4 @@
+using VArnas.ParserCombinator;
 using Xunit;
 using static VArnas.ParserCombinator.CommonParsers;
 using static VArnas.UnitTests.TestHelpers;
@@ -20,4 +21,11 @@ public class AnyTests
         input.ToArray(),
         input[0], 
         1);
+
+   
+    [Fact]
+    public void Test()
+    {
+        
+    }
 }
