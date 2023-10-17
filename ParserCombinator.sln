@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserCombinator", "ParserCombinator\ParserCombinator.csproj", "{B6EEB739-E7FA-41AB-B09F-F24519108C8E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VArnas.ParserCombinator", "VArnas.ParserCombinator\VArnas.ParserCombinator.csproj", "{B6EEB739-E7FA-41AB-B09F-F24519108C8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{977C7806-8602-45B2-AFFF-BC444155B6AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VArnas.UnitTests", "VArnas.UnitTests\VArnas.UnitTests.csproj", "{977C7806-8602-45B2-AFFF-BC444155B6AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

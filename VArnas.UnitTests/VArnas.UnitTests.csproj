@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ParserCombinator\ParserCombinator.csproj" />
+      <ProjectReference Include="..\VArnas.ParserCombinator\VArnas.ParserCombinator.csproj" />
     </ItemGroup>
 
 </Project>

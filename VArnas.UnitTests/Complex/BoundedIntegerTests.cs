@@ -1,11 +1,11 @@
-using ParserCombinator.Core;
+using VArnas.ParserCombinator;
 using Xunit;
-using static ParserCombinator.Core.CommonParsers;
-using static ParserCombinator.Core.Parser;
-using static UnitTests.TestHelpers;
+using static VArnas.ParserCombinator.CommonParsers;
+using static VArnas.ParserCombinator.Parser;
+using static VArnas.UnitTests.TestHelpers;
 using static System.Array;
 
-namespace UnitTests.Complex;
+namespace VArnas.UnitTests.Complex;
 
 public class BoundedIntegerTests
 {

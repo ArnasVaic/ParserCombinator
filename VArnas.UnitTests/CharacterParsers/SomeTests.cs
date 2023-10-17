@@ -1,10 +1,9 @@
-using System.Runtime.InteropServices;
 using Xunit;
-using static ParserCombinator.Core.CommonParsers;
-using static UnitTests.TestHelpers;
+using static VArnas.ParserCombinator.CommonParsers;
+using static VArnas.UnitTests.TestHelpers;
 using static System.Array;
 
-namespace UnitTests.CharacterParsers;
+namespace VArnas.UnitTests.CharacterParsers;
 
 public class SomeTests
 {
@@ -14,7 +13,7 @@ public class SomeTests
         "some lexer has to always succeed and the result will be an empty array".ToArray(),
         Empty<char>(),
         0);
-    
+
     [Theory]
     [InlineData("")]
     [InlineData("a?")]

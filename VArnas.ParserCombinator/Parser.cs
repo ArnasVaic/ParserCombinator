@@ -1,9 +1,31 @@
-using static ParserCombinator.Core.Either;
-using static ParserCombinator.Core.Parser;
+using System;
+using System.Linq;
+using static VArnas.ParserCombinator.Either;
+using static VArnas.ParserCombinator.Parser;
 
-namespace ParserCombinator.Core;
+namespace VArnas.ParserCombinator;
 
 public class Parser<TSymbol, TResult>(Func<ParserInput<TSymbol>, Either<string, ParseResult<TSymbol, TResult>>> parse)
+{
+    public Func<ParserInput<TSymbol>, Either<string, ParseResult<TSymbol, TResult>>> Parse { get; } = parse;
+    
+    public Parser<TSymbol, TOther> Map<TOther>(Func<TResult, TOther> func) =>
+        new(input => parse(input).Map(res => res.Map(func)));
+
+    public Parser<TSymbol, TOther> MapLeft<TOther>(TOther value) => Map(_ => value);
+    
+    public Parser<TSymbol, TOther> Bind<TOther>(Func<TResult, Parser<TSymbol, TOther>> func) =>
+        new(input => 
+            parse(input).Bind(res => 
+                func(res.Result).Parse(res.Remaining)));
+    
+    public Parser<TSymbol, TResult> Or(Parser<TSymbol, TResult> other) =>
+        new(input => Parse(input).Match(
+            _ => other.Parse(input).Match(error => 
+                Bad<TSymbol, TResult>(GetErrorMessage(input, error)), Ok), Ok));
+}
+
+public static class Parser
 {
     private static int _errorInputSegmentLength = 16;
     
@@ -19,19 +41,7 @@ public class Parser<TSymbol, TResult>(Func<ParserInput<TSymbol>, Either<string, 
         }
     }
     
-    public Func<ParserInput<TSymbol>, Either<string, ParseResult<TSymbol, TResult>>> Parse { get; } = parse;
-    
-    public Parser<TSymbol, TOther> Map<TOther>(Func<TResult, TOther> func) =>
-        new(input => parse(input).Map(res => res.Map(func)));
-
-    public Parser<TSymbol, TOther> MapLeft<TOther>(TOther value) => Map(_ => value);
-    
-    public Parser<TSymbol, TOther> Bind<TOther>(Func<TResult, Parser<TSymbol, TOther>> func) =>
-        new(input => 
-            parse(input).Bind(res => 
-                func(res.Result).Parse(res.Remaining)));
-
-    private static string ErrorMessage(ParserInput<TSymbol> input, string error)
+    public static string GetErrorMessage<TSymbol>(ParserInput<TSymbol> input, string error)
     {
         var failurePosition = input.Data
             .Skip(input.Offset)
@@ -41,14 +51,6 @@ public class Parser<TSymbol, TResult>(Func<ParserInput<TSymbol>, Either<string, 
         return $"{input.Offset} Failed to parse {new string(failurePosition)}, error: {error}";
     }
     
-    public Parser<TSymbol, TResult> Or(Parser<TSymbol, TResult> other) =>
-        new(input => Parse(input).Match(
-            _ => other.Parse(input).Match(error => 
-                Bad<TSymbol, TResult>(ErrorMessage(input, error)), Ok), Ok));
-}
-
-public static class Parser
-{
     public static Either<string, ParseResult<TSymbol, TResult>> 
         Ok<TSymbol, TResult>(ParseResult<TSymbol, TResult> result) =>
         Right<string, ParseResult<TSymbol, TResult>>(result);

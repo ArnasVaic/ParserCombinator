@@ -38,7 +38,7 @@ vowelParser
     .Map(Console.Write);
 
 ```
-
+aa
 ## More complicated example
 
 This is an example of a parser that parses number palindromes of length 5 (12321, 98789, etc...) and converts the result to a number.
