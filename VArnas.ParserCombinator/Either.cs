@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
-using static ParserCombinator.Core.Either;
+﻿using System;
+using System.Diagnostics;
+using static VArnas.ParserCombinator.Either;
 
-namespace ParserCombinator.Core;
+namespace VArnas.ParserCombinator;
 
 /// <summary>
 /// Represents a calculation that can fail.

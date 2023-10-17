@@ -1,7 +1,7 @@
-using ParserCombinator.Core;
+using VArnas.ParserCombinator;
 using Xunit;
 
-namespace UnitTests;
+namespace VArnas.UnitTests;
 
 public static class TestHelpers
 {

@@ -1,6 +1,7 @@
-using static ParserCombinator.Core.CommonParsers;
+using System.Linq;
+using static VArnas.ParserCombinator.CommonParsers;
 
-namespace ParserCombinator.Core;
+namespace VArnas.ParserCombinator;
 
 public static class CharacterParsers
 {

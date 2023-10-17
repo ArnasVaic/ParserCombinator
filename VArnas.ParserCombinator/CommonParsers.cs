@@ -1,32 +1,47 @@
-using static ParserCombinator.Core.Parser;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using static VArnas.ParserCombinator.Parser;
 
-namespace ParserCombinator.Core;
+namespace VArnas.ParserCombinator;
 
 public static class CommonParsers
 {
-    public static Parser<TSymbol, TSymbol> 
-        Any<TSymbol>() => new(input => 
-        input.Data.Count <= input.Offset ? 
-        Bad<TSymbol, TSymbol>("Empty input") : 
-        Ok<TSymbol, TSymbol>(new (
-            input.Data.ElementAt(input.Offset), 
-            input with { Offset = input.Offset + 1})));
+    public static Parser<TSymbol, TSymbol> Any<TSymbol>() => new(input =>
+    {
+        if (input.Data.Count <= input.Offset)
+            return Bad<TSymbol, TSymbol>("Empty input");
+
+        var symbol = input.Data.ElementAt(input.Offset);
+        input.Offset++;
+        
+        return Ok<TSymbol, TSymbol>(new(symbol, input));
+    });
     
     public static Parser<TSymbol, TSymbol> 
-        Satisfy<TSymbol>(Predicate<TSymbol> predicate) => 
-        Any<TSymbol>().Bind<TSymbol>(c => predicate(c) ? 
-            Pure<TSymbol, TSymbol>(c) : 
-            Zero<TSymbol, TSymbol>($"Unexpected character {c}."));
+        Satisfy<TSymbol>(Predicate<TSymbol> predicate) => new(input =>
+    {
+        if (input.Data.Count <= input.Offset)
+            return Bad<TSymbol, TSymbol>("Empty input");
+
+        var symbol = input.Data.ElementAt(input.Offset);
+        
+        if (!predicate(symbol))
+            return Bad<TSymbol, TSymbol>($"Unexpected symbol {symbol}");
+        
+        input.Offset++;
+        
+        return Ok<TSymbol, TSymbol>(new(symbol, input));
+    });
 
     public static Parser<TSymbol, IEnumerable<TOther>> Seq<TSymbol, TOther>
-        (params Parser<TSymbol, TOther>[] parsers) => 
-            Seq(parsers.AsEnumerable());
+        (params Parser<TSymbol, TOther>[] parsers) => Sequence(parsers);
     
     public static Parser<TSymbol, IEnumerable<TOther>> 
-        Seq<TSymbol, TOther>(IEnumerable<Parser<TSymbol, TOther>> parsers) => 
+        Sequence<TSymbol, TOther>(IReadOnlyCollection<Parser<TSymbol, TOther>> parsers) => 
         new(input =>
     {
-        var acc = new List<TOther>();
+        var acc = new List<TOther>(parsers.Count);
         var rem = input;
         
         foreach (var parser in parsers)
@@ -70,9 +85,9 @@ public static class CommonParsers
     
     public static Parser<TSymbol, IEnumerable<TOther>> 
         Many<TSymbol, TOther>(Parser<TSymbol, TOther> parser) => parser
-        .Bind<IEnumerable<TOther>>(r1 => Some(parser)
-        .Bind<IEnumerable<TOther>>(r2 => 
-        Pure<TSymbol, IEnumerable<TOther>>(new List<TOther> { r1 }.Concat(r2))));
+            .Bind<IEnumerable<TOther>>(r1 => Some(parser)
+                .Bind<IEnumerable<TOther>>(r2 =>
+                    Pure<TSymbol, IEnumerable<TOther>>(new List<TOther> { r1 }.Concat(r2))));
 
     public static Parser<TSymbol, TSymbol>
         Symbol<TSymbol>(TSymbol target) 
@@ -80,8 +95,27 @@ public static class CommonParsers
         Satisfy<TSymbol>(target.Equals);
 
     public static Parser<TSymbol, IEnumerable<TOther>>
-        Repeat<TSymbol, TOther>(Parser<TSymbol, TOther> parser, int times) => 
-            Seq(Enumerable.Repeat(parser, times));
+        Repeat<TSymbol, TOther>(Parser<TSymbol, TOther> parser, int times) => new(input =>
+    {
+        var array = new TOther[times];
+        var rem = input;
+
+        for (var i = 0; i < times; ++i)
+        {
+            var result = parser.Parse(rem);
+
+            if (result.Failure)
+                return Bad<TSymbol, IEnumerable<TOther>>("Could not parse sequence.");
+
+            result.Map(r =>
+            {
+                array[i] = r.Result;
+                rem = r.Remaining;
+            });
+        }
+
+        return Ok<TSymbol, IEnumerable<TOther>>(new(array, rem));
+    });
 
     public static Parser<TSymbol, TOther> 
         OneOf<TSymbol, TOther>(IEnumerable<Parser<TSymbol, TOther>> parsers) => 
