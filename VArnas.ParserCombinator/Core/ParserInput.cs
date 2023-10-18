@@ -1,4 +1,6 @@
-namespace VArnas.ParserCombinator;
+using VArnas.ParserCombinator.Interfaces;
+
+namespace VArnas.ParserCombinator.Core;
 
 /// <summary>
 /// Parser input reads from an immutable source of symbols and tracks the reading position.

@@ -1,6 +1,7 @@
-﻿using static VArnas.ParserCombinator.Either;
+﻿using VArnas.ParserCombinator.Interfaces;
+using static VArnas.ParserCombinator.Core.Either;
 
-namespace VArnas.ParserCombinator;
+namespace VArnas.ParserCombinator.Core;
 
 public class Either<TLeft, TRight>(TLeft? left, TRight? right) : IEither<TLeft, TRight>
 {

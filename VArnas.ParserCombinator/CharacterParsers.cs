@@ -1,3 +1,4 @@
+using VArnas.ParserCombinator.Interfaces;
 using static VArnas.ParserCombinator.CommonParsers;
 
 namespace VArnas.ParserCombinator;

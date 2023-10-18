@@ -1,6 +1,7 @@
-using static VArnas.ParserCombinator.Either;
+using VArnas.ParserCombinator.Interfaces;
+using static VArnas.ParserCombinator.Core.Either;
 
-namespace VArnas.ParserCombinator;
+namespace VArnas.ParserCombinator.Core;
 
 public class Parser<TSymbol, TResult>(
     Func<IParserInput<TSymbol>, IEither<string, IParseResult<TSymbol, TResult>>> parse)

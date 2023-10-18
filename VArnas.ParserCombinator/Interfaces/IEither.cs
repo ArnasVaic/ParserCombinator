@@ -1,4 +1,4 @@
-namespace VArnas.ParserCombinator;
+namespace VArnas.ParserCombinator.Interfaces;
 
 public interface IEither<TLeft, out TRight>
 {

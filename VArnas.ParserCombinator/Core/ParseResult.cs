@@ -1,5 +1,6 @@
+using VArnas.ParserCombinator.Interfaces;
 
-namespace VArnas.ParserCombinator;
+namespace VArnas.ParserCombinator.Core;
 
 public class ParseResult<TSymbol, TResult>(
     TResult result, 

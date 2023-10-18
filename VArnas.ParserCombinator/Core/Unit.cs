@@ -1,4 +1,4 @@
-namespace VArnas.ParserCombinator;
+namespace VArnas.ParserCombinator.Core;
 
 /// <summary>
 /// Empty type.

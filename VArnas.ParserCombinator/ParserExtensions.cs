@@ -1,5 +1,5 @@
-using System.Linq;
-using static VArnas.ParserCombinator.CommonParsers;
+using VArnas.ParserCombinator.Core;
+using VArnas.ParserCombinator.Interfaces;
 
 namespace VArnas.ParserCombinator;
 

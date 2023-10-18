@@ -8,7 +8,7 @@
         <Nullable>enable</Nullable>
 
         <PackageId>VArnas.ParserCombinators</PackageId>
-        <Version>1.0.1</Version>
+        <Version>1.0.3</Version>
         <Authors>Arnas Vaicekauskas</Authors>
         <Description>Functional parser cominators in .NET</Description>
         <AssemblyName>VArnas.ParserCombinator</AssemblyName>
