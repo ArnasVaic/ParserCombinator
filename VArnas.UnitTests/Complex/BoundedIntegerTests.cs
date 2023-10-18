@@ -1,24 +1,17 @@
-using VArnas.ParserCombinator;
-using Xunit;
-using static VArnas.ParserCombinator.CommonParsers;
-using static VArnas.ParserCombinator.Parser;
-using static VArnas.UnitTests.TestHelpers;
-using static System.Array;
-
 namespace VArnas.UnitTests.Complex;
 
 public class BoundedIntegerTests
 {
-    private static readonly Parser<char, char> OptionalSign = 
-        Symbol('-').Or(Pure<char, char>(' '));
+    private static readonly IParser<char, char> OptionalSign = 
+        Or(Symbol('-'), Pure<char, char>(' '));
     
-    private static readonly Parser<char, char> Digit = Satisfy<char>(char.IsDigit);
+    private static readonly IParser<char, char> Digit = Satisfy<char>(char.IsDigit);
 
-    private static readonly Parser<char, char> NonZeroDigit = Digit.Bind(d => d == 0 ? 
+    private static readonly IParser<char, char> NonZeroDigit = Digit.Bind(d => d == 0 ? 
         Zero<char, char>("0 cannot be the first digit") : 
         Pure<char, char>(d));
 
-    private static readonly Parser<char, int> Int32Parser = 
+    private static readonly IParser<char, int> Int32Parser = 
         OptionalSign    .Bind(sgn => 
         NonZeroDigit    .Bind(fst => 
         Some(Digit)     .Bind(rem =>
@@ -104,4 +97,10 @@ public class BoundedIntegerTests
     [InlineData("?/.,:punctuators123")]
     public void InvalidInput(string input) => 
         FailTest(Int32Parser, input.ToArray());
+
+    [Theory]
+    [InlineData(222147482649)]
+    [InlineData(-222147482649)]
+    public void InputOutOfBounds(long input) => 
+        FailTest(Int32Parser, input.ToString().ToArray());
 }

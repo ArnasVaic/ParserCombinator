@@ -1,16 +1,10 @@
-using VArnas.ParserCombinator;
-using Xunit;
-using static VArnas.ParserCombinator.CommonParsers;
-using static VArnas.ParserCombinator.Parser;
-using static VArnas.UnitTests.TestHelpers;
-
 namespace VArnas.UnitTests.Complex;
 
 public class NumberPalindromeTests
 {
-    private static readonly Parser<char, char> Digit = Satisfy<char>(char.IsDigit);
+    private static readonly IParser<char, char> Digit = Satisfy<char>(char.IsDigit);
         
-    private static readonly Parser<char, int> WeirdPalindromeParser =
+    private static readonly IParser<char, int> WeirdPalindromeParser =
         Digit       .Bind(fst => // We parse any digit and bring it scope as `fst`
         Digit       .Bind(snd => // We parse any digit and bring it scope as `snd`
         Digit       .Bind(mid => // We parse any digit and bring it scope as `mid`

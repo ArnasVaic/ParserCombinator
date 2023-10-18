@@ -1,15 +1,12 @@
-using Xunit;
-using static VArnas.ParserCombinator.CommonParsers;
-using static VArnas.UnitTests.TestHelpers;
-using static System.Array;
-
 namespace VArnas.UnitTests.CharacterParsers;
 
 public class SeqTests
 {
+    private static readonly IParser<char, char> Any = Any<char>();
+    
     [Fact]
     public void EmptyInput() => FailTest(
-        Seq(Any<char>(), Any<char>()), 
+        Seq(Any, Any), 
         Empty<char>());
 
     [Theory]
@@ -17,7 +14,7 @@ public class SeqTests
     [InlineData("def")]
     [InlineData("???")]
     public void GoodInput(string input) => SuccessTest(
-        Seq(Any<char>(), Any<char>(), Any<char>()),
+        Seq(Any, Any, Any),
         input.ToArray(),
         input,
         3);
