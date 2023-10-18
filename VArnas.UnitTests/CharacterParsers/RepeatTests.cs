@@ -1,8 +1,3 @@
-using Xunit;
-using static VArnas.ParserCombinator.CommonParsers;
-using static VArnas.UnitTests.TestHelpers;
-using static System.Array;
-
 namespace VArnas.UnitTests.CharacterParsers;
 
 public class RepeatTests
@@ -13,7 +8,7 @@ public class RepeatTests
     
     [Fact]
     public void NonEmptyInput_AnyCharInnerParser() => SuccessTest(
-        Repeat<char, char>(Any<char>(), 4),
+        Repeat(Any<char>(), 4),
         "repeat parser applied parser P n times".ToArray(),
         "repe".ToArray(),
         4);

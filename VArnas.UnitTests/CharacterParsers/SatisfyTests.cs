@@ -1,8 +1,3 @@
-using Xunit;
-using static VArnas.ParserCombinator.CommonParsers;
-using static VArnas.UnitTests.TestHelpers;
-using static System.Array;
-
 namespace VArnas.UnitTests.CharacterParsers;
 
 public class SatisfyTests

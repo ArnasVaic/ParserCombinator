@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using static VArnas.ParserCombinator.Parser;
 
 namespace VArnas.ParserCombinator;
 
 public static class CommonParsers
 {
+    private static readonly Unit Unit = new();
+    
     public static IParser<TSymbol, TSymbol> Any<TSymbol>() => new Parser<TSymbol, TSymbol>(input =>
     {
         if (input.Data.Count <= input.Offset)
@@ -39,7 +38,7 @@ public static class CommonParsers
     {
         if (input.Data.Count <= input.Offset)
             return Bad<TSymbol, TSymbol>("Empty input");
-
+        
         var symbol = input.Data.ElementAt(input.Offset);
         
         if (!predicate(symbol))
@@ -50,8 +49,8 @@ public static class CommonParsers
         return Ok(new ParseResult<TSymbol, TSymbol>(symbol, input));
     });
 
-    // public static IParser<TSymbol, IEnumerable<TOther>> Seq<TSymbol, TOther>
-    //     (params IParser<TSymbol, TOther>[] parsers) => Sequence(parsers);
+    public static IParser<TSymbol, IEnumerable<TOther>> Seq<TSymbol, TOther>
+        (params IParser<TSymbol, TOther>[] parsers) => Sequence(parsers);
     
     public static IParser<TSymbol, IEnumerable<TOther>> 
         Sequence<TSymbol, TOther>(IReadOnlyCollection<IParser<TSymbol, TOther>> parsers) => 
@@ -64,16 +63,17 @@ public static class CommonParsers
         {
             var result = parser.Parse(rem);
             
-            if (result.Failure)
+            if (result.IsLeft)
                 return Bad<TSymbol, IEnumerable<TOther>>("Could not parse sequence.");
 
-            result.Map(r =>
+            result.Second<Unit>(r =>
             {
                 acc.Add(r.Result);
                 rem = r.Remaining;
+                return Unit;
             });
         }
-
+        
         return Ok(new ParseResult<TSymbol, IEnumerable<TOther>>(acc, rem));
     });
 
@@ -89,12 +89,13 @@ public static class CommonParsers
             {
                 result = parser.Parse(rem);
 
-                result.Map(r =>
+                result.Second(r =>
                 {
                     acc.Add(r.Result);
                     rem = r.Remaining;
+                    return Unit;
                 });
-            } while (result.Success);
+            } while (result.IsRight);
 
             return Ok(new ParseResult<TSymbol, IEnumerable<TOther>>(acc, rem));
         });
@@ -131,13 +132,14 @@ public static class CommonParsers
         {
             var result = parser.Parse(rem);
 
-            if (result.Failure)
+            if (result.IsLeft)
                 return Bad<TSymbol, IEnumerable<TOther>>("Could not parse sequence.");
 
-            result.Map(r =>
+            result.Second(r =>
             {
                 array[i] = r.Result;
                 rem = r.Remaining;
+                return Unit;
             });
         }
 
@@ -153,7 +155,7 @@ public static class CommonParsers
             foreach (var parser in parsers)
             {
                 result = parser.Parse(input);
-                if (result.Success)
+                if (result.IsRight)
                     return result;
             }
             

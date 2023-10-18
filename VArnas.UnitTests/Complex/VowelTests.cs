@@ -1,9 +1,3 @@
-using VArnas.ParserCombinator;
-using Xunit;
-using static VArnas.ParserCombinator.CommonParsers;
-using static VArnas.ParserCombinator.CharacterParsers;
-using static VArnas.UnitTests.TestHelpers;
-
 namespace VArnas.UnitTests.Complex;
 
 public class VowelTests

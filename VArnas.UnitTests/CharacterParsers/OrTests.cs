@@ -1,8 +1,3 @@
-using Xunit;
-using static VArnas.ParserCombinator.CommonParsers;
-using static VArnas.ParserCombinator.Parser;
-using static VArnas.UnitTests.TestHelpers;
-
 namespace VArnas.UnitTests.CharacterParsers;
 
 public class OrTests

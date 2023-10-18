@@ -1,30 +1,24 @@
-using System;
-using System.Linq;
 using static VArnas.ParserCombinator.Either;
-using static VArnas.ParserCombinator.Parser;
 
 namespace VArnas.ParserCombinator;
-
-public interface IParser<TSymbol, out TResult>
-{
-    IEither<string, IParseResult<TSymbol, TResult>> Parse(IParserInput<TSymbol> input);
-
-    IParser<TSymbol, TOther> Map<TOther>(Func<TResult, TOther> func);
-
-    IParser<TSymbol, TNew> Bind<TNew>(Func<TResult, IParser<TSymbol, TNew>> func);
-}
 
 public class Parser<TSymbol, TResult>(
     Func<IParserInput<TSymbol>, IEither<string, IParseResult<TSymbol, TResult>>> parse)
     : IParser<TSymbol, TResult>
 {
+    
     public IEither<string, IParseResult<TSymbol, TResult>> 
         Parse(IParserInput<TSymbol> input) => parse(input);
     
     public IParser<TSymbol, TOther> Map<TOther>(Func<TResult, TOther> func) =>
         new Parser<TSymbol, TOther>(input => 
-            parse(input).Map<IParseResult<TSymbol, TOther>>(res => 
+            parse(input).Second<IParseResult<TSymbol, TOther>>(res => 
                 res.Map(func)));
+
+    public IParser<TSymbol, TOther> Map<TOther>(TOther result) => 
+        new Parser<TSymbol, TOther>(input => parse(input)
+            .Second<IParseResult<TSymbol, TOther>>(res => 
+                res.Map(_ => result)));
 
     public IParser<TSymbol, TOther> MapLeft<TOther>(TOther value) => 
         Map<TOther>(_ => value);

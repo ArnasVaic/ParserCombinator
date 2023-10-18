@@ -1,14 +1,4 @@
-using System.Collections.Generic;
-
 namespace VArnas.ParserCombinator;
-
-public interface IParserInput<out TSymbol>
-{
-    public TSymbol Consume();
-    
-    public IReadOnlyCollection<TSymbol> Data { get; }
-    public int Offset { get; set; }
-}
 
 /// <summary>
 /// Parser input reads from an immutable source of symbols and tracks the reading position.
@@ -23,5 +13,4 @@ public class ParserInput<TSymbol>(
 {
     public IReadOnlyCollection<TSymbol> Data { get; } = data;
     public int Offset { get; set; } = offset;
-    public TSymbol Consume() => Data.ElementAt(Offset++);
 }
