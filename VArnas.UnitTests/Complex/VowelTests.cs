@@ -1,18 +1,14 @@
 using VArnas.ParserCombinator;
 using Xunit;
 using static VArnas.ParserCombinator.CommonParsers;
+using static VArnas.ParserCombinator.CharacterParsers;
 using static VArnas.UnitTests.TestHelpers;
 
 namespace VArnas.UnitTests.Complex;
 
 public class VowelTests
 {
-    private static Parser<char, char> Vowel =
-            Symbol('a')
-        .Or(Symbol('e'))
-        .Or(Symbol('i'))
-        .Or(Symbol('o'))
-        .Or(Symbol('u'));
+    private static readonly IParser<char, char> Vowel = OneOf("aeiou");
 
     [Theory]
     [InlineData("a...")] 

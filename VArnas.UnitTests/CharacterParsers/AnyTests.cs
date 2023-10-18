@@ -21,11 +21,4 @@ public class AnyTests
         input.ToArray(),
         input[0], 
         1);
-
-   
-    [Fact]
-    public void Test()
-    {
-        
-    }
 }
